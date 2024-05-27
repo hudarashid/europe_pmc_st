@@ -2,7 +2,6 @@ import streamlit as st
 import requests
 
 from typing import Dict, List, Tuple
-from timeit import default_timer as timer
 
 
 def _transform_search_query(search_term: str, search_option: str) -> str:
@@ -53,16 +52,11 @@ def search_api(
     Return the list of each year hitCounts and the queries time taken.
 
     """
-    start = timer()
-
     start_year, end_year = year_range
 
     hit_counts_list = [_search_api_based_on_year(search_term, search_option, year) for year in range(start_year, end_year + 1)]
 
-    end = timer()
-
-    return hit_counts_list, (end-start)
-
+    return hit_counts_list
 @st.cache_data
 def transform_search_result(search_result: List[Tuple[int, int]]) -> Dict[str, any]:
     """
@@ -87,4 +81,3 @@ def transform_search_result(search_result: List[Tuple[int, int]]) -> Dict[str, a
         "size": size,
         "hitCounts": hitCounts
     }
-

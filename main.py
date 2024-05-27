@@ -1,7 +1,8 @@
 from datetime import datetime
+from timeit import default_timer as timer
+
 import streamlit as st
 import pandas as pd
-import numpy as np
 import altair as alt
 
 from pmc_api import search_api, transform_search_result
@@ -34,13 +35,17 @@ if submitted:
     if not text_input:
         search_form.error(f"Please enter a search term.")
     else:
-        search_api_results, time_taken = search_api(
-            search_term=text_input, 
-            search_option=search_option, 
-            year_range=selected_date_range
+        start = timer()
+
+        search_api_results = search_api(
+            search_term=text_input,
+            search_option=search_option,
+            year_range=selected_date_range,
         )
 
         results = transform_search_result(search_api_results)
+
+        end = timer()
 
         # Rendered historgram
         years = pd.RangeIndex(start=results["start_year"], stop=results["end_year"]+1)
@@ -52,15 +57,20 @@ if submitted:
         })
 
         # Create the horizontal bar chart using Altair
-        horizontal_bar_chart = alt.Chart(chart_data).mark_bar().encode(
-            x=alt.X('Publication Count:Q', axis=alt.Axis(format=',d')),
-            y=alt.Y('Year:O', axis=alt.Axis(title='Year'))
-        ).properties(
-            width=700,
-            height=500,
-            title=f"Publication Counts for search term :'{text_input}' in the year {selected_date_range[0]} - {selected_date_range[1]}.\
-                 \n Time taken: {round(time_taken, 2)}"
+        horizontal_bar_chart = (
+            alt.Chart(chart_data)
+            .mark_bar()
+            .encode(
+                x=alt.X("Publication Count:Q", axis=alt.Axis(format=",d")),
+                y=alt.Y("Year:O", axis=alt.Axis(title="Year")),
+            )
+            .properties(
+                width=700,
+                height=500,
+                title=f"Publication Counts for search term :'{text_input}' in the year {selected_date_range[0]} - {selected_date_range[1]}.\
+                 \n Time taken: {round((end-start), 2)}",
+            )
         )
-        
+
         # Display the chart in Streamlit
         st.altair_chart(horizontal_bar_chart, use_container_width=True)
