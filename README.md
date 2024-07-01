@@ -1,4 +1,4 @@
-##  Streamlit Framework Exploration Repository
+# Publication Counts based on the Europe PMC RESTful Web Service
 Welcome to this self-exploratory repository designed for experimenting with the Streamlit framework.
 
 You can access the published Streamlit application via this link: https://publicationeuropepmc.streamlit.app/
