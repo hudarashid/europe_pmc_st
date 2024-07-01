@@ -1,9 +1,15 @@
 from datetime import datetime
+import logging
 from timeit import default_timer as timer
 
 import streamlit as st
 import pandas as pd
 import altair as alt
+
+from streamlit.logger import get_logger
+
+LOGGER = get_logger(__file__)
+LOGGER.setLevel(logging.DEBUG)
 
 from pmc_api import search_api, transform_search_result
 
@@ -36,6 +42,8 @@ if submitted:
         search_form.error(f"Please enter a search term.")
     else:
         start = timer()
+
+        LOGGER.info(f"Search for {text_input}")
 
         search_api_results = search_api(
             search_term=text_input,
